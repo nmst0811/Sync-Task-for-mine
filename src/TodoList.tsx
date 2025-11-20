@@ -11,6 +11,8 @@ import { twMerge } from "tailwind-merge";
 
 type Props = {
   todos: Todo[];
+  updateIsDone: (id: string, value: boolean) => void;
+  remove: (id: string) => void; // ◀◀ 追加
 };
 
 const num2star = (n: number): string => "★".repeat(4 - n);
@@ -36,11 +38,6 @@ const TodoList = (props: Props) => {
             todo.isDone && "bg-blue-50 opacity-50"
           )}
         >
-        <input
-          type="checkbox"
-          checked={todo.isDone}
-          className="mr-1.5 cursor-pointer"
-        />
           {todo.isDone && (
             <div className="mb-1 rounded bg-blue-400 px-2 py-0.5 text-center text-xs text-white">
               <FontAwesomeIcon icon={faFaceGrinWide} className="mr-1.5" />
@@ -49,6 +46,12 @@ const TodoList = (props: Props) => {
             </div>
           )}
           <div className="flex flex-row items-baseline text-slate-700">
+            <input
+              type="checkbox"
+              checked={todo.isDone}
+              onChange={(e) => props.updateIsDone(todo.id, e.target.checked)}
+              className="mr-1.5 cursor-pointer"
+            />
             <FontAwesomeIcon icon={faFile} flip="horizontal" className="mr-1" />
             <div
               className={twMerge(
@@ -56,6 +59,7 @@ const TodoList = (props: Props) => {
                 todo.isDone && "line-through decoration-2"
               )}
             >
+              
               {todo.name}
             </div>
             <div className="ml-2">優先度 </div>
@@ -63,6 +67,7 @@ const TodoList = (props: Props) => {
               {num2star(todo.priority)}
             </div>
           </div>
+          
           {todo.deadline && (
             <div className="ml-4 flex items-center text-sm text-slate-500">
               <FontAwesomeIcon
@@ -74,7 +79,6 @@ const TodoList = (props: Props) => {
                 期限: {dayjs(todo.deadline).format("YYYY年M月D日 H時m分")}
               </div>
             </div>
-            
           )}
         </div>
       ))}

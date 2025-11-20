@@ -74,6 +74,16 @@ const App = () => {
     setNewTodoDeadline(null);
   };
 
+    const remove = (id: string) => {
+    const updatedTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(updatedTodos);
+  };
+
+    const removeCompletedTodos = () => {
+    const updatedTodos = todos.filter((todo) => !todo.isDone);
+    setTodos(updatedTodos);
+  };
+
   return (
     <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
       <h1 className="mb-4 text-2xl font-bold">TodoApp</h1>
@@ -83,7 +93,17 @@ const App = () => {
           uncompletedCount={uncompletedCount}
         />
       </div>
-      <TodoList todos={todos} />
+      <TodoList todos={todos} updateIsDone={updateIsDone} remove={remove} />
+
+      <button
+        type="button"
+        onClick={removeCompletedTodos}
+        className={
+          "mt-5 rounded-md bg-red-500 px-3 py-1 font-bold text-white hover:bg-red-600"
+        }
+      >
+        完了済みのタスクを削除
+      </button>
 
       <div className="mt-5 space-y-2 rounded-md border p-3">
         <h2 className="text-lg font-bold">新しいタスクの追加</h2>
