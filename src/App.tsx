@@ -3,11 +3,13 @@ import type { Todo } from "./types";
 import { initTodos } from "./initTodos";
 import TodoList from "./TodoList";
 import TaskCreator from "./TaskCreator"; // 作ったコンポーネントをインポート
+import TaskEditor from "./TaskEditor";
 import { CATEGORIES } from "./constants";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const localStorageKey = "TodoApp";
 
   // 通知許可
@@ -52,6 +54,17 @@ const App = () => {
     setTodos([...todos, newTodo]);
   };
 
+  const handleUpdateTodo = (updatedTodo: Todo) => {
+    const newTodos = todos.map((t) => (t.id === updatedTodo.id ? updatedTodo : t));
+    setTodos(newTodos);
+    setEditingTodo(null); // モーダルを閉じる
+  };
+
+  const handleDeleteFromEditor = (id: string) => {
+    remove(id);
+    setEditingTodo(null);
+  };
+
   // Todo更新機能
   const updateIsDone = (id: string, value: boolean) => {
     const updatedTodos = todos.map((todo) =>
@@ -74,8 +87,13 @@ const App = () => {
           <span className="text-indigo-600">Sync-Task</span> for mine
         </h1>
 
-        {/* リスト表示 */}
-        <TodoList todos={todos} updateIsDone={updateIsDone} remove={remove} />
+        {/* ▼▼ 編集: onEditプロップを追加 ▼▼ */}
+        <TodoList 
+          todos={todos} 
+          updateIsDone={updateIsDone} 
+          remove={remove} 
+          onEdit={setEditingTodo} 
+        />
 
         {todos.some((t) => t.isDone) && (
           <button
@@ -92,6 +110,15 @@ const App = () => {
         onAddTodo={handleAddTodo} 
         onSendNotification={sendNotification} 
       />
+
+      {editingTodo && (
+        <TaskEditor
+          todo={editingTodo}
+          onSave={handleUpdateTodo}
+          onCancel={() => setEditingTodo(null)}
+          onDelete={handleDeleteFromEditor}
+        />
+      )}
     </div>
   );
 };

@@ -9,9 +9,10 @@ type Props = {
   todo: Todo;
   updateIsDone: (id: string, value: boolean) => void;
   remove: (id: string) => void;
+  onEdit: (todo: Todo) => void;
 };
 
-const TodoItem = ({ todo, updateIsDone, remove }: Props) => {
+const TodoItem = ({ todo, updateIsDone, remove, onEdit }: Props) => {
   // 色の取得ロジック（なければグレー）
   const categoryColor = todo.category ? CATEGORY_COLORS[todo.category] : 'bg-gray-300';
 
@@ -55,6 +56,13 @@ const TodoItem = ({ todo, updateIsDone, remove }: Props) => {
             締切: {dayjs(todo.deadline).format("YYYY/MM/DD HH:mm")}
           </div>
         )}
+        {/* ▼▼ 追加: 編集ボタン ▼▼ */}
+        <button
+          onClick={() => onEdit(todo)}
+          className="mr-1 rounded-md bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-600 hover:bg-indigo-100 transition-colors"
+        >
+          編集
+        </button>
         <button
           onClick={() => remove(todo.id)}
           className="rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500 transition-colors"
