@@ -1,5 +1,5 @@
 # Sync-Task for mine
-**リンク:-----**
+**リンク:https://nmst0811.github.io/Sync-Task-for-mine/**
 
 React、TypeScript、Tailwind CSS を使用し、ローカルストレージでデータを永続化した「Todoアプリ」です。
 

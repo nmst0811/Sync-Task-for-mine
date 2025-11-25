@@ -1,13 +1,9 @@
-import React from "react";
-import type { Todo } from "./types";
-import dayjs from "dayjs";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFile,
-  faClock,
-  faFaceGrinWide,
-} from "@fortawesome/free-solid-svg-icons";
+import type { Todo } from "./types";
+import { CATEGORY_COLORS } from "./constants"; // ◀◀ ここを変更
 import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
 
 type Props = {
   todo: Todo;
@@ -15,75 +11,57 @@ type Props = {
   remove: (id: string) => void;
 };
 
-const num2star = (n: number): string => "★".repeat(4 - n);
-
-const TodoItem = (props: Props) => {
-  const { todo, updateIsDone, remove } = props;
+const TodoItem = ({ todo, updateIsDone, remove }: Props) => {
+  // 色の取得ロジック（なければグレー）
+  const categoryColor = todo.category ? CATEGORY_COLORS[todo.category] : 'bg-gray-300';
 
   return (
+    // ... (以下のreturnの中身は前回のままでOKです)
     <div
       className={twMerge(
-        "rounded-md border border-slate-500 bg-white px-3 py-2 drop-shadow-md",
-        todo.isDone && "bg-blue-50 opacity-50"
+        "mb-2 flex items-center justify-between rounded-md border bg-white p-3 shadow-sm transition-all hover:shadow-md pl-0 overflow-hidden",
+        todo.isDone && "bg-gray-100 opacity-50"
       )}
     >
-      {/* 完了済みバナー */}
-      {todo.isDone && (
-        <div className="mb-1 rounded bg-blue-400 px-2 py-0.5 text-center text-xs text-white">
-          <FontAwesomeIcon icon={faFaceGrinWide} className="mr-1.5" />
-          完了済み
-          <FontAwesomeIcon icon={faFaceGrinWide} className="ml-1.5" />
-        </div>
-      )}
-
-      {/* メイン行（チェックボックス、タイトル、優先度、削除ボタン） */}
-      <div className="flex flex-row items-center justify-between text-slate-700">
-        <div className="flex items-center">
+      <div className="flex items-center h-full">
+        {/* 左端のカラーバー */}
+        <div className={`w-2 self-stretch mr-3 ${categoryColor}`}></div>
+        
+        {/* 以下、前回と同じ... */}
+        <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="checkbox"
             checked={todo.isDone}
             onChange={(e) => updateIsDone(todo.id, e.target.checked)}
-            className="mr-1.5 cursor-pointer"
+            className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <FontAwesomeIcon icon={faFile} flip="horizontal" className="mr-1" />
-          <div
+          <span
             className={twMerge(
-              "text-lg font-bold",
-              todo.isDone && "line-through decoration-2"
+              "text-lg font-bold text-gray-700 transition-all",
+              todo.isDone && "line-through text-gray-400"
             )}
           >
             {todo.name}
-          </div>
-          
-          {/* 優先度表示 */}
-          <div className="ml-2">優先度</div>
-          <div className="ml-2 text-orange-400">
-            {num2star(todo.priority)}
-          </div>
-        </div>
+          </span>
+        </label>
+      </div>
 
-        {/* 削除ボタン */}
+      <div className="flex items-center space-x-2">
+        <div className="mr-2 font-bold text-yellow-500 text-sm tracking-widest">
+          {{ 1: "★★★", 2: "★★", 3: "★" }[todo.priority] || "★"}
+        </div>
+        {todo.deadline && (
+          <div className="mr-2 rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-500">
+            締切: {dayjs(todo.deadline).format("YYYY/MM/DD HH:mm")}
+          </div>
+        )}
         <button
           onClick={() => remove(todo.id)}
-          className="ml-2 rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500"
+          className="rounded-md bg-slate-200 px-2 py-1 text-sm font-bold text-white hover:bg-red-500 transition-colors"
         >
           削除
         </button>
       </div>
-
-      {/* 期限日表示（データがある場合のみ） */}
-      {todo.deadline && (
-        <div className="ml-4 mt-1 flex items-center text-sm text-slate-500">
-          <FontAwesomeIcon
-            icon={faClock}
-            flip="horizontal"
-            className="mr-1.5"
-          />
-          <div className={twMerge(todo.isDone && "line-through")}>
-            期限: {dayjs(todo.deadline).format("YYYY年M月D日 H時m分")}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
