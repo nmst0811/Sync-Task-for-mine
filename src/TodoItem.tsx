@@ -52,7 +52,7 @@ const TodoItem = ({ todo, allTags, updateIsDone, remove, onEdit }: Props) => {
                   if (!tag) return null;
                   return (
                     <span key={tagId} className={`text-[10px] px-1.5 py-0.5 rounded ${tag.color}`}>
-                      #{tag.label}
+                      {tag.label}
                     </span>
                   );
                 })}
