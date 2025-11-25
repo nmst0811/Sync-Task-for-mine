@@ -31,15 +31,23 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
 
   // カレンダーURL生成
   const generateCalendarUrl = (type: "google" | "outlook", title: string, date: Date | null) => {
-    if (!date) return "";
-    const startDate = dayjs(date);
-    const endDate = startDate.add(1, "hour");
+    if (!date) return ""; // 日付がなければ何もしない
+    
+    // ▼▼ 変更箇所 ▼▼
+    const endDate = dayjs(date);                 // 終了時刻 ＝ 締切時間
+    const startDate = endDate.subtract(30, "minute"); // 開始時刻 ＝ 締切の30分前
+    // ▲▲ 変更箇所ここまで ▲▲
+
     const formatG = (d: dayjs.Dayjs) => d.format("YYYYMMDDTHHmmss");
 
     if (type === "google") {
-      return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatG(startDate)}/${formatG(endDate)}`;
+      // Googleカレンダー用URL
+      const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${formatG(startDate)}/${formatG(endDate)}`;
+      window.open(url, "_blank");
     } else {
-      return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}`;
+      // Outlookカレンダー用URL
+      const url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(title)}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}`;
+      window.open(url, "_blank");
     }
   };
 

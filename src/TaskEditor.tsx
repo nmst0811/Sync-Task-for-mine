@@ -20,15 +20,21 @@ const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
 
   // カレンダーURL生成 (共通ロジック)
   const generateCalendarUrl = (type: "google" | "outlook") => {
-    if (!deadline) return;
-    const startDate = dayjs(deadline);
-    const endDate = startDate.add(1, "hour");
+    if (!deadline) return; // Stateのdeadlineを使います
+    
+    // ▼▼ 変更箇所: 締切を終了時間とし、開始時間をその30分前に設定 ▼▼
+    const endDate = dayjs(deadline);                 // 終了時刻 ＝ 締切時間
+    const startDate = endDate.subtract(30, "minute"); // 開始時刻 ＝ 締切の30分前
+    // ▲▲ 変更箇所ここまで ▲▲
+
     const formatG = (d: dayjs.Dayjs) => d.format("YYYYMMDDTHHmmss");
 
     if (type === "google") {
+      // Stateのnameを使います
       const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(name)}&dates=${formatG(startDate)}/${formatG(endDate)}`;
       window.open(url, "_blank");
     } else {
+      // Stateのnameを使います
       const url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(name)}&startdt=${startDate.toISOString()}&enddt=${endDate.toISOString()}`;
       window.open(url, "_blank");
     }
@@ -104,7 +110,7 @@ const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
                 className="flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white py-2 font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 <FontAwesomeIcon icon={faGoogle} className="text-blue-500" />
-                <span className="text-xs sm:text-sm">Google登録</span>
+                <span className="text-xs sm:text-sm">+ Google</span>
               </button>
               <button
                 onClick={() => generateCalendarUrl("outlook")}
@@ -112,7 +118,7 @@ const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
                 className="flex items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white py-2 font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 <FontAwesomeIcon icon={faMicrosoft} className="text-blue-700" />
-                <span className="text-xs sm:text-sm">Outlook登録</span>
+                <span className="text-xs sm:text-sm">+ Outlook</span>
               </button>
             </div>
 
