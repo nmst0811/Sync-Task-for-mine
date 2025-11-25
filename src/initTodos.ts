@@ -8,5 +8,6 @@ export const initTodos: Todo[] = [
     isDone: false,
     priority: 1,
     deadline: new Date(2025, 2, 9, 19, 0),
+    category: "other",
   },
 ];
