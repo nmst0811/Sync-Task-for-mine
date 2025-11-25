@@ -1,22 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Todo } from "./types";
 import { initTodos } from "./initTodos";
 import WelcomeMessage from "./WelcomeMessage";
 import TodoList from "./TodoList";
 import { v4 as uuid } from "uuid";
 import dayjs from "dayjs";
-import { twMerge } from "tailwind-merge"; // ◀◀ 追加
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // ◀◀ 追加
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"; // ◀◀ 追加
+import { twMerge } from "tailwind-merge";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"; 
+
 
 const App = () => {
-  const [todos, setTodos] = useState<Todo[]>(initTodos);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoName, setNewTodoName] = useState("");
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
 
-  const uncompletedCount = todos.filter((todo: Todo) => !todo.isDone).length;
+  const [initialized, setInitialized] = useState(false);
+  const localStorageKey = "TodoApp";
+
+  // App コンポーネントの初回実行時のみLocalStorageからTodoデータを復元
+  useEffect(() => {
+    const todoJsonStr = localStorage.getItem(localStorageKey);
+    if (todoJsonStr && todoJsonStr !== "[]") {
+      const storedTodos: Todo[] = JSON.parse(todoJsonStr);
+      const convertedTodos = storedTodos.map((todo) => ({
+        ...todo,
+        deadline: todo.deadline ? new Date(todo.deadline) : null,
+      }));
+      setTodos(convertedTodos);
+    } else {
+      // LocalStorage にデータがない場合は initTodos をセットする
+      setTodos(initTodos);
+    }
+    setInitialized(true);
+  }, []);
+
+  // 状態 todos または initialized に変更があったときTodoデータを保存
+  useEffect(() => {
+    if (initialized) {
+      localStorage.setItem(localStorageKey, JSON.stringify(todos));
+    }
+  }, [todos, initialized]);
+
+  const uncompletedCount = todos.filter(
+    (todo: Todo) => !todo.isDone
+  ).length;
+
 
   // ▼▼ 追加
   const isValidTodoName = (name: string): string => {
