@@ -8,6 +8,7 @@ import {
   faFaceGrinWide,
 } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
+import TodoItem from "./TodoItem"; 
 
 type Props = {
   todos: Todo[];
@@ -31,56 +32,12 @@ const TodoList = (props: Props) => {
   return (
     <div className="flex flex-col gap-2">
       {todos.map((todo) => (
-        <div
+        <TodoItem
           key={todo.id}
-          className={twMerge(
-            "rounded-md border border-slate-500 bg-white px-3 py-2 drop-shadow-md",
-            todo.isDone && "bg-blue-50 opacity-50"
-          )}
-        >
-          {todo.isDone && (
-            <div className="mb-1 rounded bg-blue-400 px-2 py-0.5 text-center text-xs text-white">
-              <FontAwesomeIcon icon={faFaceGrinWide} className="mr-1.5" />
-              完了済み
-              <FontAwesomeIcon icon={faFaceGrinWide} className="ml-1.5" />
-            </div>
-          )}
-          <div className="flex flex-row items-baseline text-slate-700">
-            <input
-              type="checkbox"
-              checked={todo.isDone}
-              onChange={(e) => props.updateIsDone(todo.id, e.target.checked)}
-              className="mr-1.5 cursor-pointer"
-            />
-            <FontAwesomeIcon icon={faFile} flip="horizontal" className="mr-1" />
-            <div
-              className={twMerge(
-                "text-lg font-bold",
-                todo.isDone && "line-through decoration-2"
-              )}
-            >
-              
-              {todo.name}
-            </div>
-            <div className="ml-2">優先度 </div>
-            <div className="ml-2 text-orange-400">
-              {num2star(todo.priority)}
-            </div>
-          </div>
-          
-          {todo.deadline && (
-            <div className="ml-4 flex items-center text-sm text-slate-500">
-              <FontAwesomeIcon
-                icon={faClock}
-                flip="horizontal"
-                className="mr-1.5"
-              />
-              <div className={twMerge(todo.isDone && "line-through")}>
-                期限: {dayjs(todo.deadline).format("YYYY年M月D日 H時m分")}
-              </div>
-            </div>
-          )}
-        </div>
+          todo={todo}
+          remove={props.remove}
+          updateIsDone={props.updateIsDone}
+        />
       ))}
     </div>
   );
