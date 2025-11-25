@@ -42,8 +42,8 @@ const TodoList = ({ todos, tags, updateIsDone, remove, onEdit }: Props) => {
       
       {todos.length === 0 && (
         <div className="text-center text-gray-400 mt-10 text-sm font-bold">
-          <p>タスクがありません。</p>
-          <p>下のアイコンをタップして追加しよう！</p>
+          <p>タスクがありません</p>
+          <p>下のアイコンをタップして追加してください</p>
         </div>
       )}
     </div>
