@@ -3,25 +3,25 @@ import {
   faGraduationCap, 
   faBriefcase, 
   faHouse, 
-  faLaptopCode,
+  faPerson,
   faEllipsis 
 } from "@fortawesome/free-solid-svg-icons"; 
 
 // カテゴリのデータ定義
 export const CATEGORIES = [
-  { id: 'school', label: '学校', icon: faGraduationCap, color: 'bg-blue-500' },
-  { id: 'work', label: 'バイト', icon: faBriefcase, color: 'bg-orange-500' },
-  { id: 'coding', label: '開発', icon: faLaptopCode, color: 'bg-indigo-600' },
-  { id: 'private', label: '私用', icon: faHouse, color: 'bg-green-500' },
+  { id: 'school', label: '学校', icon: faGraduationCap, color: 'bg-yellow-500' },
+  { id: 'work', label: 'バイト', icon: faBriefcase, color: 'bg-green-500' },
+  { id: 'fanmade', label: 'ファンメイド', icon: faPerson, color: 'bg-teal-500' },
+  { id: 'private', label: '私用', icon: faHouse, color: 'bg-blue-500' },
   { id: 'other', label: 'その他', icon: faEllipsis, color: 'bg-gray-500' },
 ];
 
 // 色をIDから引けるようにする辞書（TodoItemで使います）
 export const CATEGORY_COLORS: Record<string, string> = {
-  school: 'bg-blue-500',
-  work: 'bg-orange-500',
-  coding: 'bg-indigo-600',
-  private: 'bg-green-500',
+  school: 'bg-yellow-500',
+  work: 'bg-green-500',
+  fanmade: 'bg-teal-500',
+  private: 'bg-blue-500',
   other: 'bg-gray-500',
 };
 

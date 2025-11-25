@@ -104,11 +104,11 @@ const App = () => {
       <div className="mx-4 max-w-2xl pt-10 md:mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="mb-4 text-2xl font-bold text-gray-800">
-            <span className="text-indigo-600">Sync-Task</span> for mine
+            <span className="text-teal-500">Sync-Task</span> for mine
           </h1>
           <button 
                 onClick={() => setIsTagManagerOpen(true)}
-                className="text-indigo-600 bg-indigo-50 p-2 rounded-full hover:bg-indigo-100"
+                className="text-teal-500 bg-teal-50 p-2 rounded-full hover:bg-teal-100"
             >
                 <FontAwesomeIcon icon={faTag} />
             </button>
