@@ -2,18 +2,19 @@ import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarCheck, faXmark,faTag } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle, faMicrosoft } from "@fortawesome/free-brands-svg-icons";
 import { CATEGORIES } from "./constants"; // 定数をインポート
-import type { Todo } from "./types";
+import type { Todo, Tag } from "./types";
 
 // 親（App.tsx）から受け取る関数の型定義
 type Props = {
   onAddTodo: (todo: Todo) => void;
   onSendNotification: (title: string) => void;
+  tags: Tag[];
 };
 
-const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
+const TaskCreator = ({ onAddTodo, onSendNotification, tags }: Props) => {
   // ▼▼ Stateやロジックはここ（App.tsxから移動） ▼▼
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("school");
@@ -21,6 +22,7 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
   const [newTodoNameError, setNewTodoNameError] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
   // バリデーション
   const isValidTodoName = (name: string): string => {
@@ -51,6 +53,12 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
     }
   };
 
+  const toggleTag = (tagId: string) => {
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
+  };
+
   // モーダルを開く
   const openAddModal = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -58,6 +66,7 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
     setNewTodoPriority(3);
     setNewTodoDeadline(dayjs().add(1, "day").hour(23).minute(59).toDate());
     setNewTodoNameError("");
+    setSelectedTagIds([]);
     setIsModalOpen(true);
   };
 
@@ -76,6 +85,7 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
       priority: newTodoPriority,
       deadline: newTodoDeadline,
       category: selectedCategory,
+      tags: selectedTagIds, // ◀◀ 保存
     };
 
     // 親の関数を実行して保存
@@ -184,6 +194,34 @@ const TaskCreator = ({ onAddTodo, onSendNotification }: Props) => {
                   ))}
                 </div>
               </div>
+
+              {/* タグ選択エリア */}
+              {tags.length > 0 && (
+                <div>
+                  <label className="text-sm font-bold text-gray-500">タグ</label>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {tags.map((tag) => {
+                      const isSelected = selectedTagIds.includes(tag.id);
+                      return (
+                        <button
+                          key={tag.id}
+                          onClick={() => toggleTag(tag.id)}
+                          className={`rounded-md border px-2 py-1 text-xs font-bold transition-colors ${
+                            isSelected
+                              ? `${tag.color} border-current`
+                              : "border-gray-200 bg-white text-gray-400"
+                          }`}
+                        >
+                          {isSelected && <span className="mr-1">✓</span>}
+                          {tag.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* --- 追加ここまで --- */}
 
               <div>
                 <label className="text-sm font-bold text-gray-500">期限</label>

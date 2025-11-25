@@ -4,19 +4,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSave, faXmark, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { faGoogle, faMicrosoft } from "@fortawesome/free-brands-svg-icons";
 import { CATEGORIES } from "./constants";
-import type { Todo } from "./types";
+import type { Todo, Tag } from "./types";
 
 type Props = {
   todo: Todo;
+  tags: Tag[];
   onSave: (updatedTodo: Todo) => void;
   onCancel: () => void;
   onDelete: (id: string) => void;
 };
 
-const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
+const TaskEditor = ({ todo, tags, onSave, onCancel, onDelete }: Props) => {
   const [name, setName] = useState(todo.name);
   const [priority, setPriority] = useState(todo.priority);
   const [deadline, setDeadline] = useState<Date | null>(todo.deadline);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>(todo.tags || []);
 
   // カレンダーURL生成 (共通ロジック)
   const generateCalendarUrl = (type: "google" | "outlook") => {
@@ -40,11 +42,19 @@ const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
     }
   };
 
+  const toggleTag = (tagId: string) => {
+    setSelectedTagIds((prev) =>
+      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
+  };
+
   const handleSave = () => {
-    onSave({ ...todo, name, priority, deadline });
+    onSave({ ...todo, name, priority, deadline, tags: selectedTagIds }); // ◀◀ tags追加
   };
 
   const categoryConfig = CATEGORIES.find((c) => c.id === todo.category);
+
+  
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 transition-opacity">
@@ -100,6 +110,30 @@ const TaskEditor = ({ todo, onSave, onCancel, onDelete }: Props) => {
               className="mt-1 w-full rounded border-none bg-gray-100 p-2 font-medium"
             />
           </div>
+
+          {tags.length > 0 && (
+            <div>
+              <label className="text-sm font-bold text-gray-500">タグ</label>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {tags.map((tag) => {
+                  const isSelected = selectedTagIds.includes(tag.id);
+                  return (
+                    <button
+                      key={tag.id}
+                      onClick={() => toggleTag(tag.id)}
+                      className={`rounded-md border px-2 py-1 text-xs font-bold transition-colors ${
+                        isSelected
+                          ? `${tag.color} border-current`
+                          : "border-gray-200 bg-white text-gray-400"
+                      }`}
+                    >
+                      {tag.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* アクションボタン */}
           <div className="flex flex-col gap-3 pt-4">

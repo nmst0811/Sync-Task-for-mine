@@ -1,18 +1,19 @@
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { Todo } from "./types";
+import type { Todo, Tag } from "./types";
 import { CATEGORY_COLORS } from "./constants"; // ◀◀ ここを変更
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
 
 type Props = {
   todo: Todo;
+  allTags: Tag[];
   updateIsDone: (id: string, value: boolean) => void;
   remove: (id: string) => void;
   onEdit: (todo: Todo) => void;
 };
 
-const TodoItem = ({ todo, updateIsDone, remove, onEdit }: Props) => {
+const TodoItem = ({ todo, allTags, updateIsDone, remove, onEdit }: Props) => {
   // 色の取得ロジック（なければグレー）
   const categoryColor = todo.category ? CATEGORY_COLORS[todo.category] : 'bg-gray-300';
 
@@ -36,14 +37,29 @@ const TodoItem = ({ todo, updateIsDone, remove, onEdit }: Props) => {
             onChange={(e) => updateIsDone(todo.id, e.target.checked)}
             className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <span
-            className={twMerge(
-              "text-lg font-bold text-gray-700 transition-all",
-              todo.isDone && "line-through text-gray-400"
+          <div className="flex flex-col">
+            <span className={twMerge(
+                "text-lg font-bold text-gray-700 transition-all",
+                todo.isDone && "line-through text-gray-400"
+              )}
+            >
+              {todo.name}
+            </span>
+            {todo.tags && todo.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-0.5">
+                {todo.tags.map(tagId => {
+                  const tag = allTags.find(t => t.id === tagId);
+                  if (!tag) return null;
+                  return (
+                    <span key={tagId} className={`text-[10px] px-1.5 py-0.5 rounded ${tag.color}`}>
+                      #{tag.label}
+                    </span>
+                  );
+                })}
+              </div>
             )}
-          >
-            {todo.name}
-          </span>
+            {/* ▲▲ 追加ここまで ▲▲ */}
+          </div>
         </label>
       </div>
 

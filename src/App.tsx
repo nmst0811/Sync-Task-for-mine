@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
-import type { Todo } from "./types";
+import type { Todo, Tag } from "./types";
 import { initTodos } from "./initTodos";
 import TodoList from "./TodoList";
 import TaskCreator from "./TaskCreator"; // 作ったコンポーネントをインポート
 import TaskEditor from "./TaskEditor";
+import TagManager from "./TagManager"; // ◀◀ 追加
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTag } from "@fortawesome/free-solid-svg-icons"; // アイコン追加
 import { CATEGORIES } from "./constants";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [initialized, setInitialized] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [tags, setTags] = useState<Tag[]>([]); // ◀◀ 追加: タグのState
+  const [isTagManagerOpen, setIsTagManagerOpen] = useState(false); // ◀◀ 追加: タグ管理画面の開閉
   const localStorageKey = "TodoApp";
+  const tagStorageKey = "TodoApp_Tags";
 
   // 通知許可
   useEffect(() => {
@@ -32,6 +38,11 @@ const App = () => {
     } else {
       setTodos(initTodos);
     }
+    // ▼▼ タグの読み込み ▼▼
+    const tagJsonStr = localStorage.getItem(tagStorageKey);
+    if (tagJsonStr) {
+      setTags(JSON.parse(tagJsonStr));
+    }
     setInitialized(true);
   }, []);
 
@@ -39,8 +50,9 @@ const App = () => {
   useEffect(() => {
     if (initialized) {
       localStorage.setItem(localStorageKey, JSON.stringify(todos));
+      localStorage.setItem(tagStorageKey, JSON.stringify(tags));
     }
-  }, [todos, initialized]);
+  }, [todos, tags, initialized]);
 
   // 通知機能
   const sendNotification = (title: string) => {
@@ -52,6 +64,13 @@ const App = () => {
   // Todo追加機能（TaskCreatorから呼び出される）
   const handleAddTodo = (newTodo: Todo) => {
     setTodos([...todos, newTodo]);
+  };
+
+  const handleAddTag = (newTag: Tag) => setTags([...tags, newTag]);
+
+  const handleDeleteTag = (id: string) => {
+    setTags(tags.filter((t) => t.id !== id));
+    // タスクからも削除されたタグIDを消すのが親切だが、今回は表示時に無視されるのでそのままでOK
   };
 
   const handleUpdateTodo = (updatedTodo: Todo) => {
@@ -83,13 +102,22 @@ const App = () => {
   return (
     <div className="relative min-h-screen bg-gray-100 pb-32">
       <div className="mx-4 max-w-2xl pt-10 md:mx-auto">
-        <h1 className="mb-4 text-2xl font-bold text-gray-800">
-          <span className="text-indigo-600">Sync-Task</span> for mine
-        </h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="mb-4 text-2xl font-bold text-gray-800">
+            <span className="text-indigo-600">Sync-Task</span> for mine
+          </h1>
+          <button 
+                onClick={() => setIsTagManagerOpen(true)}
+                className="text-indigo-600 bg-indigo-50 p-2 rounded-full hover:bg-indigo-100"
+            >
+                <FontAwesomeIcon icon={faTag} />
+            </button>
+        </div>
 
         {/* ▼▼ 編集: onEditプロップを追加 ▼▼ */}
         <TodoList 
           todos={todos} 
+          tags={tags}
           updateIsDone={updateIsDone} 
           remove={remove} 
           onEdit={setEditingTodo} 
@@ -109,14 +137,25 @@ const App = () => {
       <TaskCreator 
         onAddTodo={handleAddTodo} 
         onSendNotification={sendNotification} 
+        tags={tags}
       />
 
       {editingTodo && (
         <TaskEditor
           todo={editingTodo}
+          tags={tags}
           onSave={handleUpdateTodo}
           onCancel={() => setEditingTodo(null)}
           onDelete={handleDeleteFromEditor}
+        />
+      )}
+
+      {isTagManagerOpen && (
+        <TagManager
+            tags={tags}
+            onAddTag={handleAddTag}
+            onDeleteTag={handleDeleteTag}
+            onClose={() => setIsTagManagerOpen(false)}
         />
       )}
     </div>

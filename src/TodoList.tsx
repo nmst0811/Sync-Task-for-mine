@@ -1,14 +1,15 @@
-import type { Todo } from "./types";
+import type { Todo, Tag } from "./types";
 import TodoItem from "./TodoItem";
 
 type Props = {
   todos: Todo[];
+  tags: Tag[];
   updateIsDone: (id: string, value: boolean) => void;
   remove: (id: string) => void;
   onEdit: (todo: Todo) => void; // ◀◀ 追加: 編集ボタンを押したときの関数
 };
 
-const TodoList = ({ todos, updateIsDone, remove, onEdit }: Props) => {
+const TodoList = ({ todos, tags, updateIsDone, remove, onEdit }: Props) => {
   // 表示順のソート
   // 1. 未完了のタスクを上に
   // 2. 優先度が高い（数字が小さい）順に
@@ -32,6 +33,7 @@ const TodoList = ({ todos, updateIsDone, remove, onEdit }: Props) => {
         <TodoItem
           key={todo.id}
           todo={todo}
+          allTags={tags}
           updateIsDone={updateIsDone}
           remove={remove}
           onEdit={onEdit} // ◀◀ TodoItemへ渡す

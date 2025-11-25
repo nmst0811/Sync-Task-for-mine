@@ -24,3 +24,13 @@ export const CATEGORY_COLORS: Record<string, string> = {
   private: 'bg-green-500',
   other: 'bg-gray-500',
 };
+
+// タグ用の色リスト
+export const TAG_COLORS = [
+  { label: "赤", className: "bg-red-100 text-red-700" },
+  { label: "青", className: "bg-blue-100 text-blue-700" },
+  { label: "緑", className: "bg-green-100 text-green-700" },
+  { label: "黄", className: "bg-yellow-100 text-yellow-700" },
+  { label: "紫", className: "bg-purple-100 text-purple-700" },
+  { label: "灰", className: "bg-gray-100 text-gray-700" },
+];
